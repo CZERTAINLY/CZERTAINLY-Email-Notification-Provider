@@ -1,0 +1,42 @@
+server:
+  port: ${PORT:8080}
+  ssl:
+    enabled: false
+
+spring:
+  datasource:
+    url: ${JDBC_URL}
+    username: ${JDBC_USERNAME}
+    password: ${JDBC_PASSWORD}
+    driver-class-name: 'org.postgresql.Driver'
+    auto-commit: false
+  flyway:
+    out-of-order: true
+    table: "emailnp_schema_history"
+    schemas: ${DB_SCHEMA:emailnp}
+  jpa:
+    properties:
+      hibernate.default_schema: ${DB_SCHEMA:emailnp}
+  mail:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: ${SMTP_AUTH:true}
+          starttls:
+            enable: ${SMTP_TLS:true}
+    test-connection: true
+
+management:
+  endpoints:
+    web:
+      base-path: '/'
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
