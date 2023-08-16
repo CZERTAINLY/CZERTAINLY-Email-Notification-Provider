@@ -2,6 +2,7 @@ package com.czertainly.np.email.dao.entity;
 
 import com.czertainly.api.model.client.attribute.RequestAttributeDto;
 import com.czertainly.api.model.common.attribute.v2.BaseAttribute;
+import com.czertainly.api.model.common.attribute.v2.DataAttribute;
 import com.czertainly.api.model.common.attribute.v2.MetadataAttribute;
 import com.czertainly.api.model.connector.notification.NotificationProviderInstanceDto;
 import com.czertainly.core.util.AttributeDefinitionUtils;
@@ -83,8 +84,8 @@ public class NotificationInstance extends UniquelyIdentified {
         return AttributeDefinitionUtils.deserialize(attributes, BaseAttribute.class);
     }
 
-    public void setAttributes(List<RequestAttributeDto> attributes) {
-        this.attributes = AttributeDefinitionUtils.serializeRequestAttributes(attributes);
+    public void setAttributes(List<DataAttribute> attributes) {
+        this.attributes = AttributeDefinitionUtils.serialize(attributes);
     }
 
     public NotificationProviderInstanceDto mapToDto() {
