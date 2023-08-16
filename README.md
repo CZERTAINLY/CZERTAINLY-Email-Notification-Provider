@@ -80,7 +80,7 @@ The variables will be replaced with values in the notification request, for exam
     "recipients": [
         {
             "name": "John Doe",
-            "email": "roman.cinkais@czertainly.com",
+            "email": "john.doe@example.com",
             "mappedAttributes": [
             ]
         }
