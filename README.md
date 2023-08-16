@@ -68,7 +68,7 @@ The following is an example of the Content Template with variables:
   </ul>
 </p>
 
-<button onclick="location.href='https://localhost/administrator/#/certificates/detail/${notificationData.certificateUuid}'"
+<button onclick="location.href='https://yourdomain.com/administrator/#/certificates/detail/${notificationData.certificateUuid}'"
         type="button">
   Go To Certificate
 </button>
