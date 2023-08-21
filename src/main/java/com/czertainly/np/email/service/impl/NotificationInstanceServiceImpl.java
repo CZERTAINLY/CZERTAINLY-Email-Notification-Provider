@@ -14,6 +14,7 @@ import com.czertainly.core.util.AttributeDefinitionUtils;
 import com.czertainly.np.email.dao.entity.NotificationInstance;
 import com.czertainly.np.email.dao.repository.NotificationInstanceRepository;
 import com.czertainly.np.email.exception.NotificationException;
+import com.czertainly.np.email.service.AttributeService;
 import com.czertainly.np.email.service.NotificationInstanceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +47,8 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
 
     private JavaMailSender emailSender;
 
+    private AttributeService attributeService;
+
     @Autowired
     public void setNotificationInstanceRepository(NotificationInstanceRepository notificationInstanceRepository) {
         this.notificationInstanceRepository = notificationInstanceRepository;
@@ -54,6 +57,11 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
     @Autowired
     public void setEmailSender(JavaMailSender emailSender) {
         this.emailSender = emailSender;
+    }
+
+    @Autowired
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
     }
 
     @Override
@@ -86,7 +94,7 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
         NotificationInstance notificationInstance = new NotificationInstance();
         notificationInstance.setUuid(UUID.randomUUID().toString());
         notificationInstance.setName(request.getName());
-        notificationInstance.setAttributes(request.getAttributes());
+        notificationInstance.setAttributes(AttributeDefinitionUtils.mergeAttributes(attributeService.getAttributes(request.getKind()), request.getAttributes()));
         notificationInstance.setEmailFrom(emailFrom);
         notificationInstance.setSubject(subject);
         notificationInstance.setContentTemplate(contentTemplate);
@@ -118,7 +126,7 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
         final String contentTemplate = AttributeDefinitionUtils.getSingleItemAttributeContentValue(
                 AttributeServiceImpl.DATA_CONTENT_TEMPLATE_NAME, request.getAttributes(), CodeBlockAttributeContent.class).getData().getCode();
 
-        notificationInstance.setAttributes(request.getAttributes());
+        notificationInstance.setAttributes(AttributeDefinitionUtils.mergeAttributes(attributeService.getAttributes(request.getKind()), request.getAttributes()));
         notificationInstance.setEmailFrom(emailFrom);
         notificationInstance.setSubject(subject);
         notificationInstance.setContentTemplate(contentTemplate);
@@ -195,5 +203,4 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
         }
         return to.toArray(new String[0]);
     }
-
 }
