@@ -81,30 +81,6 @@ public class NotificationInstanceControllerImpl implements NotificationInstanceC
     @Override
     public List<DataAttribute> listMappingAttributes(String kind) {
         // return empty list as we do not need any custom attributes
-        // BUT, temporarily add sample mapping attribute to test functionality
-
-        DataAttribute attribute = new DataAttribute();
-
-        attribute.setUuid("66d47607-9daf-4f94-87ca-cc7a0e28e1d1");
-        attribute.setName("mapping_department");
-        attribute.setDescription("Department of recipient");
-        attribute.setContentType(AttributeContentType.STRING);
-        attribute.setType(AttributeType.DATA);
-
-        DataAttributeProperties attributeProperties = new DataAttributeProperties();
-        attributeProperties.setLabel("Department");
-        attributeProperties.setRequired(false);
-        attributeProperties.setReadOnly(false);
-        attributeProperties.setVisible(true);
-        attributeProperties.setList(false);
-        attributeProperties.setMultiSelect(false);
-        attribute.setProperties(attributeProperties);
-
-        List<BaseAttributeContent> content = new ArrayList<>();
-        StringAttributeContent attributeContent = new StringAttributeContent("Email subject");
-        content.add(attributeContent);
-        attribute.setContent(content);
-
-        return List.of(attribute);
+        return List.of();
     }
 }
