@@ -171,7 +171,12 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
         StrSubstitutor subst = new StrSubstitutor(new StrLookup() {
             @Override
             public String lookup(String key) {
-                return JsonPath.read(document, "$." + key);
+                try {
+                    return JsonPath.read(document, "$." + key);
+                } catch (Exception e) {
+                    logger.error("Error while substituting key: {}, {}", key, e.getMessage());
+                }
+                return "";
             }
         });
 
