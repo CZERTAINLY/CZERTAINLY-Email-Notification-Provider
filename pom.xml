@@ -10,7 +10,6 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.czertainly</groupId>
     <artifactId>email-notification-provider</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>CZERTAINLY-Email-Notification-Provider</name>
