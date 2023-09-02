@@ -23,7 +23,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ExceptionHandlingAdvice {
@@ -54,13 +53,13 @@ public class ExceptionHandlingAdvice {
 
     @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
     public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        ErrorMessageDto errorMessage = new ErrorMessageDto(ex.getName(), ex.getClass().getSimpleName(), ex.getValue().toString());
+        ErrorMessageDto errorMessage = new ErrorMessageDto(ex.getName(), ex.getClass().getSimpleName(), ex.getValue() != null ? ex.getValue().toString() : null);
         if (log.isDebugEnabled()) {
             errorMessage.setStacktrace(ExceptionUtils.getStackTrace(ex));
         }
         ApiErrorResponseDto apiErrorResponseDto = new ApiErrorResponseDto(81, HttpStatus.BAD_REQUEST, "Arguments not valid", errorMessage);
         apiErrorResponseDto.setTimestamp(Instant.now().toEpochMilli());
-        log.error(apiErrorResponseDto.getMessage() + ": " + ExceptionUtils.getStackTrace(ex));
+        log.error("{}: {}", apiErrorResponseDto.getMessage(), ExceptionUtils.getStackTrace(ex));
         return new ResponseEntity<>(
                 apiErrorResponseDto, new HttpHeaders(), apiErrorResponseDto.getStatus());
     }
@@ -76,14 +75,15 @@ public class ExceptionHandlingAdvice {
                 errorMessage.setStacktrace(ExceptionUtils.getStackTrace(exCause));
             }
         } else {
-            errorMessage = new ErrorMessageDto(ex.getRootCause().getMessage(), ex.getClass().getSimpleName(), ex.getMessage());
+            String error = ex.getRootCause() != null ? ex.getRootCause().getMessage() : null;
+            errorMessage = new ErrorMessageDto(error, ex.getClass().getSimpleName(), ex.getMessage());
             if (log.isDebugEnabled()) {
                 errorMessage.setStacktrace(ExceptionUtils.getStackTrace(ex));
             }
         }
         ApiErrorResponseDto apiErrorResponseDto = new ApiErrorResponseDto(81, HttpStatus.BAD_REQUEST, "Arguments not valid", errorMessage);
         apiErrorResponseDto.setTimestamp(Instant.now().toEpochMilli());
-        log.error(apiErrorResponseDto.getMessage() + ": " + ExceptionUtils.getStackTrace(ex));
+        log.error("{}: {}", apiErrorResponseDto.getMessage(), ExceptionUtils.getStackTrace(ex));
         return new ResponseEntity<>(
                 apiErrorResponseDto, new HttpHeaders(), apiErrorResponseDto.getStatus());
     }
@@ -96,7 +96,7 @@ public class ExceptionHandlingAdvice {
         }
         ApiErrorResponseDto apiErrorResponseDto = new ApiErrorResponseDto(404, HttpStatus.NOT_FOUND, "Object not found", errorMessage);
         apiErrorResponseDto.setTimestamp(Instant.now().toEpochMilli());
-        log.error(apiErrorResponseDto.getMessage() + ": " + ExceptionUtils.getStackTrace(ex));
+        log.error("{}: {}", apiErrorResponseDto.getMessage(), ExceptionUtils.getStackTrace(ex));
         return new ResponseEntity<>(
                 apiErrorResponseDto, new HttpHeaders(), apiErrorResponseDto.getStatus());
     }
@@ -109,7 +109,7 @@ public class ExceptionHandlingAdvice {
         }
         ApiErrorResponseDto apiErrorResponseDto = new ApiErrorResponseDto(405, HttpStatus.BAD_REQUEST, "Object already exists", errorMessage);
         apiErrorResponseDto.setTimestamp(Instant.now().toEpochMilli());
-        log.error(apiErrorResponseDto.getMessage() + ": " + ExceptionUtils.getStackTrace(ex));
+        log.error("{}: {}", apiErrorResponseDto.getMessage(), ExceptionUtils.getStackTrace(ex));
         return new ResponseEntity<>(
                 apiErrorResponseDto, new HttpHeaders(), apiErrorResponseDto.getStatus());
     }
@@ -122,7 +122,7 @@ public class ExceptionHandlingAdvice {
         }
         ApiErrorResponseDto apiErrorResponseDto = new ApiErrorResponseDto(406, HttpStatus.BAD_REQUEST, "Object cannot be deleted", errorMessage);
         apiErrorResponseDto.setTimestamp(Instant.now().toEpochMilli());
-        log.error(apiErrorResponseDto.getMessage() + ": " + ExceptionUtils.getStackTrace(ex));
+        log.error("{}: {}", apiErrorResponseDto.getMessage(), ExceptionUtils.getStackTrace(ex));
         return new ResponseEntity<>(
                 apiErrorResponseDto, new HttpHeaders(), apiErrorResponseDto.getStatus());
     }
@@ -133,8 +133,7 @@ public class ExceptionHandlingAdvice {
         log.info("HTTP 422: {}", ex.getMessage());
 
         return ex.getErrors().stream()
-                .map(ValidationError::getErrorDescription)
-                .collect(Collectors.toList());
+                .map(ValidationError::getErrorDescription).toList();
     }
 
     @ExceptionHandler(NotificationException.class)
@@ -148,7 +147,7 @@ public class ExceptionHandlingAdvice {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Failed to send notification, see logs for more details", errorMessage);
         apiErrorResponseDto.setTimestamp(Instant.now().toEpochMilli());
-        log.error(apiErrorResponseDto.getMessage() + ": " + ExceptionUtils.getStackTrace(ex));
+        log.error("{}: {}", apiErrorResponseDto.getMessage(), ExceptionUtils.getStackTrace(ex));
         return new ResponseEntity<>(
                 apiErrorResponseDto, new HttpHeaders(), apiErrorResponseDto.getStatus());
     }
@@ -161,7 +160,7 @@ public class ExceptionHandlingAdvice {
         }
         ApiErrorResponseDto apiErrorResponseDto = new ApiErrorResponseDto(99, HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected exception occurred", errorMessage);
         apiErrorResponseDto.setTimestamp(Instant.now().toEpochMilli());
-        log.error("Unexpected exception occurred: " + ex.getMessage());
+        log.error("Unexpected exception occurred: {}", ex.getMessage());
         return new ResponseEntity<>(
                 apiErrorResponseDto, new HttpHeaders(), apiErrorResponseDto.getStatus());
     }
