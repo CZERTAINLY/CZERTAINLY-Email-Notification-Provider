@@ -146,9 +146,12 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
 
     @Override
     public void sendNotification(UUID uuid, NotificationProviderNotifyRequestDto request) throws NotFoundException {
+        logger.info("Received request to send email: eventType={}, resource={}", request.getEventType(), request.getResource());
         NotificationInstance notificationInstance = notificationInstanceRepository
                 .findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException(NotificationInstance.class, uuid));
+
+        logger.debug("Request to send email received with the content: {}", request);
 
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -158,7 +161,7 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
 
         // convert request to JSON for JSONPath and substitution
         ObjectWriter ow = new ObjectMapper().writer();
-        String json = null;
+        String json;
         try {
             json = ow.writeValueAsString(request);
         } catch (JsonProcessingException e) {
@@ -194,6 +197,7 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
         }
 
         emailSender.send(mimeMessage);
+        logger.info("Email sent to: {}", request.getRecipients());
     }
 
     private String[] getRecipients(List<NotificationRecipientDto> recipients) {
