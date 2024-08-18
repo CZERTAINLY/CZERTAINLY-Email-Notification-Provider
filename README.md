@@ -116,3 +116,15 @@ Will parse the final notification Content Template to be:
   Go To Certificate
 </button>
 ```
+
+## How to enable DEBUG logs
+
+To enable DEBUG logs for the implementation of the email notification provider, you need to set the following environment variable:
+```shell
+LOGGING_LEVEL_COM_CZERTAINLY=DEBUG
+```
+
+To enable DEBUG logs for the mail sending process and SMTP related information, you need to set the following environment variable:
+```shell
+SPRING_MAIL_PROPERTIES_MAIL_DEBUG=true
+```
