@@ -16,16 +16,10 @@ import com.czertainly.np.email.dao.repository.NotificationInstanceRepository;
 import com.czertainly.np.email.exception.NotificationException;
 import com.czertainly.np.email.service.AttributeService;
 import com.czertainly.np.email.service.NotificationInstanceService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
+import com.czertainly.np.email.util.TemplateUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrLookup;
-import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,32 +153,8 @@ public class NotificationInstanceServiceImpl implements NotificationInstanceServ
         String htmlMsg = notificationInstance.getContentTemplate();
         String Subject = notificationInstance.getSubject();
 
-        // convert request to JSON for JSONPath and substitution
-        ObjectWriter ow = new ObjectMapper().writer();
-        String json;
-        try {
-            json = ow.writeValueAsString(request);
-        } catch (JsonProcessingException e) {
-            logger.error("Error while serializing request to JSON: {}, {}", request, e.getMessage());
-            throw new NotificationException("Error while serializing request to JSON: " + request + ", " + e.getMessage());
-        }
-
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
-
-        StrSubstitutor subst = new StrSubstitutor(new StrLookup() {
-            @Override
-            public String lookup(String key) {
-                try {
-                    return JsonPath.read(document, "$." + key);
-                } catch (Exception e) {
-                    logger.error("Error while substituting key: {}, {}", key, e.getMessage());
-                }
-                return "";
-            }
-        });
-
-        final String substitutedHtmlMsg = subst.replace(htmlMsg);
-        final String substitutedSubject = subst.replace(Subject);
+        final String substitutedHtmlMsg = TemplateUtils.processFreeMarkerTemplate(htmlMsg, request);
+        final String substitutedSubject = TemplateUtils.processFreeMarkerTemplate(Subject, request);
 
         try {
             helper.setText(substitutedHtmlMsg, true);

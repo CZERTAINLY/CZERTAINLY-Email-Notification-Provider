@@ -2,7 +2,7 @@ package com.czertainly.np.email.util;
 
 import com.czertainly.api.model.connector.notification.NotificationProviderNotifyRequestDto;
 import com.czertainly.np.email.exception.NotificationException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -20,40 +20,30 @@ public class TemplateUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateUtils.class);
 
-    public static String processFreeMarkerHtml(String html, NotificationProviderNotifyRequestDto request) {
+    public static String processFreeMarkerTemplate(String data, NotificationProviderNotifyRequestDto request) {
         // Convert request to a Map instead of using the JSON node directly
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> dataModel;
         try {
-            dataModel = objectMapper.convertValue(request, Map.class);
+            dataModel = objectMapper.convertValue(request, new TypeReference<>() {});
         } catch (IllegalArgumentException e) {
             logger.error("Error while converting request to Map: {}, {}", request, e.getMessage());
             throw new NotificationException("Error while converting request to Map: " + request + ", " + e.getMessage());
         }
 
-        // Convert request to JSON
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        JsonNode jsonNode;
-//        try {
-//            jsonNode = objectMapper.valueToTree(request);
-//        } catch (IllegalArgumentException e) {
-//            logger.error("Error while converting request to JSON: {}, {}", request, e.getMessage());
-//            throw new NotificationException("Error while converting request to JSON: " + request + ", " + e.getMessage());
-//        }
-
         // Prepare FreeMarker configuration
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_33);
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setLogTemplateExceptions(false);
         cfg.setWrapUncheckedExceptions(true);
 
         // Create template from the HTML string
-        Template template = null;
+        Template template;
         try {
-            template = new Template("contentTemplate", new StringReader(html), cfg);
+            template = new Template("contentTemplate", new StringReader(data), cfg);
         } catch (IOException e) {
-            logger.error("Error while creating FreeMarker template: {}, {}", html, e.getMessage());
+            logger.error("Error while creating FreeMarker template: {}, {}", data, e.getMessage());
             throw new NotificationException("Error while creating FreeMarker template: " + e.getMessage(), e);
         }
 
