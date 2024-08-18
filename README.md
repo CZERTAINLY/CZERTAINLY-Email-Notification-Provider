@@ -1,6 +1,6 @@
 # CZERTAINLY-Email-Notification-Provider
 
-> This repository is part of the commercial open-source project CZERTAINLY. You can find more information about the project at [CZERTAINLY](https://github.com/3KeyCompany/CZERTAINLY) repository, including the contribution guide.
+> This repository is part of the commercial open-source project CZERTAINLY. You can find more information about the project at [CZERTAINLY](https://github.com/CZERTAINLY/CZERTAINLY) repository, including the contribution guide.
 
 Email Notification Provider `Connector` is the implementation of the following `Function Groups` and `Kinds`:
 
@@ -19,13 +19,13 @@ Email Notification Provider `Connector` requires the PostgreSQL database to stor
 
 ## Interfaces
 
-Email Notification Provider implements `Notification Provider` interfaces. To learn more about the interfaces and end points, refer to the [CZERTAINLY Interfaces](https://github.com/3KeyCompany/CZERTAINLY-Interfaces).
+Email Notification Provider implements `Notification Provider` interfaces. To learn more about the interfaces and end points, refer to the [CZERTAINLY Interfaces](https://github.com/CZERTAINLY/CZERTAINLY-Interfaces).
 
 For more information, please refer to the [CZERTAINLY documentation](https://docs.czertainly.com).
 
 ## Docker container
 
-Email Notification Provider `Connector` is provided as a Docker container. Use the `3keycompany/czertainly-email-notification-provider:tagname` to pull the required image from the repository. It can be configured using the following environment variables:
+Email Notification Provider `Connector` is provided as a Docker container. Use the `czertainly/czertainly-email-notification-provider:tagname` to pull the required image from the repository. It can be configured using the following environment variables:
 
 | Variable        | Description                                              | Required                                           | Default value |
 |-----------------|----------------------------------------------------------|----------------------------------------------------|---------------|
